@@ -43,12 +43,12 @@ export async function register(formdata) {
         return { error: error.message };
     }
 
-    redirect("/login");
+    redirect("/auth/login");
 }
 
 export async function logout() {
     const supabase = await createClient();
     
     await supabase.auth.signOut();
-    redirect("/login");
+    redirect("/auth/login");
 }
