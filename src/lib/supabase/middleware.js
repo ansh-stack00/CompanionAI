@@ -24,7 +24,7 @@ export async function UpdateSession(request) {
                         ...options
                     })
                 },
-                remove(name) {
+                remove(name, options) {
                     response.cookies.set({
                         name,
                         value: '',
