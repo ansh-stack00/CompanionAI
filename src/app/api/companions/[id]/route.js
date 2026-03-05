@@ -44,7 +44,7 @@ export async function GET( _ , context) {
 }
 
 // api to update a companion by id
-export async function PUT(request, context) {
+export async function PUT(request, {params}) {
     try {
         const supabase = await createClient();
 
@@ -54,7 +54,7 @@ export async function PUT(request, context) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 500 });
         }
 
-        const { id } = await context.params;
+        const { id } = await params;
         if(!id) {
             console.log("Missing companion ID in request parameters");
             return NextResponse.json({ error: "Missing companion ID in request parameters" }, { status: 400 });
