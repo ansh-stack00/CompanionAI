@@ -56,7 +56,7 @@ export async function POST(request) {
     const { data, error } = await supabase
       .from('notes')
       .insert({
-        user_id: session.user.id,
+        user_id: user.id,
         title: title?.trim() || null,
         content: content.trim(),
       })

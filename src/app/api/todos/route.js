@@ -34,7 +34,7 @@ export async function GET(request) {
             return NextResponse.json({ error: "Failed to fetch todos" }, { status: 500 })
         }
 
-        return NextResponse.json(todos)
+        return NextResponse.json({todos})
 
     } catch (error) {
         console.log("Unexpected error:", error)
@@ -55,7 +55,7 @@ export async function POST(request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 
-        const { title } = await request.json()
+        const { task } = await request.json()
          if (!task?.trim()) {
             console.log("Validation error: Task is required")
             return NextResponse.json({ error: 'Task is required' }, { status: 400 })
@@ -66,7 +66,7 @@ export async function POST(request) {
             .insert([
                 {
                     user_id: user.id,
-                    title,
+                    task,
                     completed: false
                 }
             ])

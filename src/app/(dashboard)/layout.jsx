@@ -8,7 +8,6 @@ export default function DashboardLayout({ children }) {
         <Sidebar />
       </div>
 
-      {/* Main content — offset by sidebar width */}
       <main className="flex-1 md:ml-64 overflow-y-auto">
         {children}
       </main>

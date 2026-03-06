@@ -37,20 +37,20 @@ export async function UpdateSession(request) {
 
     const { data: { user } } = await supabase.auth.getUser();
 
-    // const isAuthPage =
-    // request.nextUrl.pathname.startsWith("/login") ||
-    // request.nextUrl.pathname.startsWith("/signup");
+    const isAuthPage =
+    request.nextUrl.pathname.startsWith("/auth/login") ||
+    request.nextUrl.pathname.startsWith("/auth/signup");
 
-    // const isDashboardPage =
-    //     request.nextUrl.pathname.startsWith("/dashboard");
+    const isDashboardPage =
+        request.nextUrl.pathname.startsWith("/dashboard");
 
-    // if (user && isAuthPage) {
-    //     return NextResponse.redirect(new URL("/dashboard", request.url));
-    // }
+    if (user && isAuthPage) {
+        return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
 
-    // if (!user && isDashboardPage) {
-    //     return NextResponse.redirect(new URL("/login", request.url));
-    // }
+    if (!user && isDashboardPage) {
+        return NextResponse.redirect(new URL("/auth/login", request.url));
+    }
 
     return response;
 }

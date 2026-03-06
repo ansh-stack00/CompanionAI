@@ -6,33 +6,22 @@ import { cn } from '@/lib/utils'
 import {
   LayoutDashboard,
   Bot,
-  StickyNote,
   CheckSquare,
   User,
   LogOut
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { logout } from '@/app/(auth)/actions'
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/companions/new', label: 'Companions', icon: Bot },
-  { href: '/notes', label: 'Notes', icon: StickyNote },
-  { href: '/todos', label: 'To-Dos', icon: CheckSquare },
+  { href: '/tasks', label: 'To-Dos', icon: CheckSquare },
   { href: '/profile', label: 'Profile', icon: User },
 ]
 
 export default function Sidebar() {
   const pathname = usePathname()
-  const router = useRouter()
-
-  const handleLogout = async () => {
-    await fetch('/api/logout', {
-      method: 'POST',
-    })
-
-    router.push('/auth/login')
-    router.refresh()
-  }
 
   return (
     <aside className="flex flex-col w-64 h-screen bg-card border-r border-border fixed left-0 top-0 z-40">
@@ -65,14 +54,16 @@ export default function Sidebar() {
 
       {/* Logout */}
       <div className="px-3 py-4 border-t border-border">
+      <form action={logout}>
         <Button
           variant="ghost"
-          className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive"
-          onClick={handleLogout}
+          className="w-full justify-center gap-3 text-muted-foreground hover:text-destructive"
+          type="submit"
         >
-          <LogOut className="w-4 h-4" />
-          Logout
+          <span>Logout</span>
+           <LogOut className="w-4 h-4" />
         </Button>
+        </form>
       </div>
     </aside>
   )

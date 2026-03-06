@@ -110,7 +110,7 @@ export async function POST(request) {
                 user_id: user.id,
                 title: noteRegex[1].trim(),
                 content: noteRegex[2].trim(),
-            }).catch(err => console.error("Error saving note:", err))
+            })
         }
 
         const todoMatch = rawResponse.match(/\[ADD_TODO:\s*([\s\S]+?)\]/)

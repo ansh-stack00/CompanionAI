@@ -1,10 +1,20 @@
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
+import FAQ from "./(landing)/_components/faq";
+import Features from "./(landing)/_components/featues";
+import Footer from "./(landing)/_components/footer";
+import Hero from "./(landing)/_components/hero";
+import HowItWorks from "./(landing)/_components/howItWorks";
+import Navbar from "./(landing)/_components/navBar";
 
-export default function Home() {
+
+export default function LandingPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <Button variant="outline">Welcome !</Button>
-    </div>
-  );
+    <main className="bg-[#050508] text-white min-h-screen overflow-x-hidden">
+      <Navbar/>
+      <Hero/>
+      <Features/>
+      <HowItWorks/>
+      <FAQ/>
+      <Footer/>
+    </main>
+  )
 }

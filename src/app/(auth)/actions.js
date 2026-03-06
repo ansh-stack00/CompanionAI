@@ -24,7 +24,7 @@ export async function login( formdata ) {
         return { error: error.message}
     }
 
-    redirect("/");
+    redirect("/dashboard");
 
 
 
