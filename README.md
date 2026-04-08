@@ -314,7 +314,6 @@ create policy "Users access own messages" on messages for all
 
 ## Roadmap
 
-- [ ] Streaming AI responses (word-by-word like ChatGPT)
 - [ ] Voice input and text-to-speech responses
 - [ ] Companion sharing and discovery
 - [ ] Advanced memory management UI
