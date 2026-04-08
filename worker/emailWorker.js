@@ -6,8 +6,9 @@ dotenv.config({
 
 import { Worker } from "bullmq";
 import { getRedisConnection } from "../src/lib/redis.js";
-import { sendWelcomeEmail } from "../src/lib/email.js";
+import { sendWelcomeEmail , sendReminderEmail } from "../src/lib/email.js";
 import Bottleneck from "bottleneck";
+import { supabaseAdmin } from "../src/lib/supabase/admin.js";
 
 console.log(process.env.UPSTASH_REDIS_URL);
 const limiter = new Bottleneck({
@@ -20,6 +21,19 @@ new Worker("emailQueue", async(job) => {
         console.log(`Sending welcome email to ${email}`);
 
         await limiter.schedule(() => sendWelcomeEmail(email))
+    }
+
+    if(job.name === "sendEmailNotification") {
+        const { userId , task , message } = job.data
+
+        const { data: user , error } = await supabaseAdmin.auth.admin.getUserById(userId)
+        if(!user?.user?.email ) {
+            console.log(`User with ID ${userId} does not have an email address. Skipping email notification.`)
+            return 
+        }
+        console.log(`Sending email notification to ${user.user.email} with task: ${task}`)
+
+        await limiter.schedule( () => sendReminderEmail(user.user.email , message))
     }
 },
 {

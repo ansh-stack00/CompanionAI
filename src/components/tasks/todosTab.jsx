@@ -106,7 +106,7 @@ export default function TodosTab() {
       const res = await fetch(`/api/todos/${id}`, { method: 'DELETE' })
       if (!res.ok) throw new Error()
       setTodos(prev => prev.filter(t => t.id !== id))
-      toast.success({ title: 'Task deleted' })
+      toast.success( 'Task deleted')
     } catch {
       toast.error('Failed to delete task')
     }

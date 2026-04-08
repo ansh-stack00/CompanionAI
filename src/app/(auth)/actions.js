@@ -52,10 +52,10 @@ export async function register(formdata) {
             email
         },
         {
-            attempts: 3,
+            attempts: 5,
             backoff: {
                 type: "exponential",
-                delay: 2000
+                delay: 60000
             }
         }
     )
@@ -64,7 +64,6 @@ export async function register(formdata) {
 
     redirect("/auth/login");
 
-    re
 }
 
 export async function logout() {

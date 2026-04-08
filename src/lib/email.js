@@ -106,3 +106,47 @@ export async function sendWelcomeEmail( email ) {
     }
     
 }
+
+export async function sendReminderEmail( email , task ) {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: "onboarding@shaadisnaps.in", 
+      to: email,
+      subject: "⏰ Reminder: You have an unfinished task",
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px;">
+          <h2>Hey 👋</h2>
+          <p>You still haven’t completed this task:</p>
+
+          <div style="
+            background: #f3f4f6;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: 500;
+          ">
+            ${task}
+          </div>
+
+          <p>Don’t forget to complete it! 🚀</p>
+
+          <p style="margin-top: 30px; font-size: 12px; color: gray;">
+            Sent from your AI Companion
+          </p>
+        </div>
+      `,
+    })
+
+    if (error) {
+      console.error("Reminder email error:", error)
+      throw error
+    }
+
+    console.log("Reminder email sent successfully:", data)
+    return data
+
+  } catch (err) {
+    console.error("sendReminderEmail failed:", err)
+    throw err
+  }
+}

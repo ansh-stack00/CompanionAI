@@ -13,7 +13,7 @@ export async function POST() {
     }
 
     const redis = new IORedis(getRedisConnection())
-    await redis.set(`heartbeat:${user.id}`, "true" , "EX" , 60)
+    await redis.set(`heartbeat:${user.id}`, "true" , "EX" , 90)
 
     await redis.quit()
 

@@ -106,56 +106,110 @@ export default function ChatWindow({ companion }) {
   }
 
   const handleSend = async (content) => {
-    if (!activeConversationId || sending) return
+  if (!activeConversationId || sending) return
 
-    const tempMsg = {
-      id: `temp-${Date.now()}`,
-      role: 'user',
-      content,
-      created_at: new Date().toISOString(),
-    }
-    setMessages(prev => [...prev, tempMsg])
-    setSending(true)
-    setIsTyping(true)
-
-    try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: content,
-          conversationId: activeConversationId,
-          companionId: companion.id,
-        }),
-      })
-
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error)
-
-      setIsTyping(false)
-
-      setMessages(prev => [...prev, {
-        id: `ai-${Date.now()}`,
-        role: 'assistant',
-        content: data.message,
-        created_at: new Date().toISOString(),
-      }])
-
-      // Refreshing sidebar to show updated title
-      const convsRes = await fetch(`/api/conversations?companionId=${companion.id}`)
-      const convsData = await convsRes.json()
-      setConversations(convsData.conversations || [])
-
-    } catch (error) {
-      setIsTyping(false)
-      setMessages(prev => prev.filter(m => m.id !== tempMsg.id))
-      toast.error(
-         `Failed to send message: ${error.message}`
-      )
-    } finally {
-      setSending(false)
-    }
+  // Optimistic user message
+  const tempMsg = {
+    id: `temp-${Date.now()}`,
+    role: 'user',
+    content,
+    created_at: new Date().toISOString(),
   }
+  setMessages(prev => [...prev, tempMsg])
+  setSending(true)
+  setIsTyping(true)
+
+  // Placeholder for streaming AI response
+  const aiMsgId = `ai-${Date.now()}`
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: content,
+        conversationId: activeConversationId,
+        companionId: companion.id,
+      }),
+    })
+
+    if (!res.ok) {
+      const errData = await res.json()
+      throw new Error(errData.error || 'Failed to send')
+    }
+
+    // Hide typing indicator, add empty AI bubble to stream into
+    setIsTyping(false)
+    setMessages(prev => [...prev, {
+      id: aiMsgId,
+      role: 'assistant',
+      content: '',           // starts empty, tokens fill it in
+      created_at: new Date().toISOString(),
+    }])
+
+    // Read the SSE stream
+    const reader = res.body.getReader()
+    const decoder = new TextDecoder()
+    let buffer = ''
+
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+
+      // Decode chunk and add to buffer
+      buffer += decoder.decode(value, { stream: true })
+
+      // Process complete SSE lines from buffer
+      const lines = buffer.split('\n')
+      // Keep the last incomplete line in buffer
+      buffer = lines.pop() || ''
+
+      for (const line of lines) {
+        // SSE lines start with "data: "
+        if (!line.startsWith('data: ')) continue
+
+        const data = line.slice(6).trim()  // strip "data: "
+
+        // Stream finished
+        if (data === '[DONE]') {
+          // Refresh sidebar to get updated title
+          const convsRes = await fetch(`/api/conversations?companionId=${companion.id}`)
+          const convsData = await convsRes.json()
+          setConversations(convsData.conversations || [])
+          break
+        }
+
+        try {
+          const parsed = JSON.parse(data)
+
+          if (parsed.error) {
+            throw new Error(parsed.error)
+          }
+
+          if (parsed.token) {
+            // Append token to the AI message bubble in real time
+            setMessages(prev => prev.map(msg =>
+              msg.id === aiMsgId
+                ? { ...msg, content: msg.content + parsed.token }
+                : msg
+            ))
+          }
+        } catch (parseErr) {
+          // Skip malformed chunks
+          console.warn('Stream parse error:', parseErr)
+        }
+      }
+    }
+
+  } catch (error) {
+    setIsTyping(false)
+    // Remove both the temp user message and empty AI bubble on error
+    setMessages(prev => prev.filter(m => m.id !== tempMsg.id && m.id !== aiMsgId))
+    toast.error(`Failed to send message: ${error.message}`)
+  } finally {
+    setSending(false)
+  }
+}
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">

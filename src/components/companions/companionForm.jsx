@@ -1,8 +1,8 @@
 'use client'
 
+import { CreateClient } from '@/lib/supabase/client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@supabase/supabase-js'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -47,13 +47,11 @@ const RELATIONSHIP_TYPES = [
   { value: 'coach', label: 'Coach' },
 ]
 
-export default function CompanionForm({ initialData = null }) {
+export default  function CompanionForm({ initialData = null }) {
   const isEditing = !!initialData
   const router = useRouter()
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  )
+  const supabase =  CreateClient()
+  
 
   const [loading, setLoading] = useState(false)
   const [avatarUploading, setAvatarUploading] = useState(false)

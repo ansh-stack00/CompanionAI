@@ -8,7 +8,7 @@ export default function DashboardLayout({ children }) {
         <Sidebar />
       </div>
 
-      <main className="flex-1 md:ml-64 overflow-y-auto">
+      <main className="flex-1 md:ml-66 overflow-y-auto">
         {children}
       </main>
     </div>

@@ -21,7 +21,6 @@ export default function ConversationSidebar({
   onNewConversation,
   onDeleteConversation,
 }) {
-
   const [deleting, setDeleting] = useState(null)
 
   const handleDelete = async (convId) => {
@@ -39,7 +38,7 @@ export default function ConversationSidebar({
   }
 
   return (
-    <div className="w-64 border-r border-border bg-card flex flex-col h-full flex-shrink-0">
+    <div className="w-74 border-r border-border bg-card flex flex-col h-full flex-shrink-0">
 
       {/* New Chat button */}
       <div className="p-3 border-b border-border">
@@ -49,9 +48,9 @@ export default function ConversationSidebar({
         </Button>
       </div>
 
-      {/* List */}
       <ScrollArea className="flex-1 overflow-x-hidden">
         <div className="p-2 space-y-1">
+
           {conversations.length === 0 && (
             <p className="text-xs text-muted-foreground text-center py-8 px-3">
               No conversations yet. Say hello!
@@ -67,60 +66,74 @@ export default function ConversationSidebar({
                 key={conv.id}
                 onClick={() => onSelectConversation(conv.id)}
                 className={cn(
-                  'group flex items-center gap-2 p-2.5 rounded-lg cursor-pointer transition-colors',
+                  'flex items-start gap-2 p-2 rounded-lg cursor-pointer transition-colors w-full',
                   isActive
                     ? 'bg-primary/10 text-primary'
                     : 'hover:bg-accent text-foreground'
                 )}
               >
-                <MessageSquare className="w-4 h-4 mt-0.5 flex-shrink-0 opacity-50" />
+                {/* Icon */}
+                <MessageSquare className="w-4 h-4 mt-1 flex-shrink-0 opacity-50" />
 
+                {/* Text block + delete button all inside here */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate leading-tight">{conv.title}</p>
-                  {preview && (
-                    <p className="text-xs text-muted-foreground truncate mt-0.5">{preview}</p>
-                  )}
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {format(new Date(conv.created_at), 'MMM d')}
+                  <p className="text-sm font-medium truncate leading-tight">
+                    {conv.title}
                   </p>
+                  {preview && (
+                    <p className="text-xs text-muted-foreground truncate mt-0.5">
+                      {preview}
+                    </p>
+                  )}
+
+                  {/* Bottom row — date on left, delete on right */}
+                  <div className="flex items-center justify-between mt-1">
+                    <p className="text-xs text-muted-foreground">
+                      {format(new Date(conv.created_at), 'MMM d')}
+                    </p>
+
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-5 w-5 rounded hover:bg-destructive/10 flex-shrink-0"
+                          onClick={e => e.stopPropagation()}
+                          disabled={deleting === conv.id}
+                        >
+                          <Trash2 className="w-3 h-3 text-destructive" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete this conversation?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            All messages will be permanently deleted.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel onClick={e => e.stopPropagation()}>
+                            Cancel
+                          </AlertDialogCancel>
+                          <AlertDialogAction
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            onClick={e => {
+                              e.stopPropagation()
+                              handleDelete(conv.id)
+                            }}
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </div>
 
-                {/* Delete — visible on hover */}
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 ml-1"
-                      onClick={e => e.stopPropagation()}
-                      disabled={deleting === conv.id}
-                    >
-                      <Trash2 className="w-3 h-3 text-destructive" />
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Delete this conversation?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        All messages in this conversation will be permanently deleted.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel onClick={e => e.stopPropagation()}>
-                        Cancel
-                      </AlertDialogCancel>
-                      <AlertDialogAction
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        onClick={e => { e.stopPropagation(); handleDelete(conv.id) }}
-                      >
-                        Delete
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
               </div>
             )
           })}
+
         </div>
       </ScrollArea>
     </div>

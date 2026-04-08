@@ -7,11 +7,35 @@ import CompanionCard from '@/components/companions/companionCard'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Plus, Bot } from 'lucide-react'
+import { CreateClient } from '@/lib/supabase/client'
+import { toast } from 'sonner'
 
 export default function DashboardPage() {
+  const supabase = CreateClient()
   const router = useRouter()
   const [companions, setCompanions] = useState([])
   const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("notifications")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "notifications",
+        },
+        (payload) => {
+          toast(payload.new.message)
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [])
 
   useEffect(() => {
     fetchCompanions()

@@ -9,7 +9,7 @@ export function UserPresence() {
             })
         }
         sendHeartbeat()
-        const interval = setInterval(sendHeartbeat, 30000) // Send heartbeat every 30 seconds
+        const interval = setInterval(sendHeartbeat, 45000) // Send heartbeat every 45 seconds
         return () => clearInterval(interval)
     }, [])
 }

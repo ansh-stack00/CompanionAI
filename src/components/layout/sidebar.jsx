@@ -8,7 +8,9 @@ import {
   Bot,
   CheckSquare,
   User,
-  LogOut
+  LogOut,
+  BarChart2,
+  History
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { logout } from '@/app/(auth)/actions'
@@ -17,14 +19,16 @@ const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/companions/new', label: 'Companions', icon: Bot },
   { href: '/tasks', label: 'To-Dos', icon: CheckSquare },
-  { href: '/profile', label: 'Profile', icon: User },
+  { href: '/history',        label: 'History',     icon: History },
+  { href: '/analytics',      label: 'Analytics',   icon: BarChart2 },
+  // { href: '/profile', label: 'Profile', icon: User },
 ]
 
 export default function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="flex flex-col w-64 h-screen bg-card border-r border-border fixed left-0 top-0 z-40">
+    <aside className="flex flex-col w-62 h-screen bg-card border-r border-border fixed left-0 top-0 z-40">
       {/* Logo */}
       <div className="flex items-center gap-2 px-6 py-5 border-b border-border">
         <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
